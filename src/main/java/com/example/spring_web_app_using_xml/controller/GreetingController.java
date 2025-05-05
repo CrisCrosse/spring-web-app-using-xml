@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.ui.Model;
 
-@Controller
+//@Controller
 public class GreetingController {
 
     @GetMapping("/greeting")
@@ -16,6 +16,10 @@ public class GreetingController {
             Model model) {
         model.addAttribute("name", name);
         return "greeting";
+    }
+
+    public void sayHello() {
+        System.out.println("hello");
     }
 
 }
