@@ -1,8 +1,12 @@
 package com.example.spring_web_app_using_xml;
 
 import com.example.spring_web_app_using_xml.filter.TopSecretFilter;
+import com.example.spring_web_app_using_xml.userrealm.MyUserRealm;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.security.BasicAuthenticator;
+import org.mortbay.jetty.security.Constraint;
+import org.mortbay.jetty.security.ConstraintMapping;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.FilterHolder;
 import org.mortbay.jetty.servlet.ServletHolder;
@@ -37,6 +41,17 @@ public class SpringWebAppUsingXmlApplication {
 		// Add a custom filter to check for the presence of a specific HTTP header
 		TopSecretFilter myHeaderFilter = new TopSecretFilter();
 		jettyContext.addFilter(new FilterHolder(myHeaderFilter), "/*", Handler.REQUEST);
+
+
+		jettyContext.getSecurityHandler().setUserRealm(new MyUserRealm());
+		jettyContext.getSecurityHandler().setAuthenticator(new BasicAuthenticator());
+		Constraint constraint = new Constraint("sayHiToCoolUsersOnly", "CoolUserRole");
+		constraint.setAuthenticate(true);
+		ConstraintMapping constraintMapping = new ConstraintMapping();
+		constraintMapping.setConstraint(constraint);
+		constraintMapping.setPathSpec("/hello");
+		ConstraintMapping[] constraintMappings = new ConstraintMapping[] {constraintMapping};
+		jettyContext.getSecurityHandler().setConstraintMappings(constraintMappings);
 
 		server.start();
 		System.out.println("Server started at http://localhost:8080/api/v1");
