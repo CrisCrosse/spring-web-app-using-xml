@@ -7,6 +7,7 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.security.BasicAuthenticator;
 import org.mortbay.jetty.security.Constraint;
 import org.mortbay.jetty.security.ConstraintMapping;
+import org.mortbay.jetty.security.SecurityHandler;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.FilterHolder;
 import org.mortbay.jetty.servlet.ServletHolder;
@@ -21,12 +22,10 @@ public class SpringWebAppUsingXmlApplication {
 
 	public static void main(String[] args) throws Exception {
 		// Start a Jetty server
-		// the Jetty server is a request handler which has a thread pool and aggregates HTTP connectors + handlers
-		// ie. it reads requests and delegates to the correct handler via the thread pool
 		Server server = new Server(8080);
 		Context jettyContext = new Context(server, "/api/v1", true, true);
 
-//		instantiate a servlet with an anonymous inner class
+//		instantiate and add a servlet matching /hello requests to the server context
 		HttpServlet helloServlet = new HttpServlet() {
 			@Override
 			protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -42,16 +41,17 @@ public class SpringWebAppUsingXmlApplication {
 		TopSecretFilter myHeaderFilter = new TopSecretFilter();
 		jettyContext.addFilter(new FilterHolder(myHeaderFilter), "/*", Handler.REQUEST);
 
-
-		jettyContext.getSecurityHandler().setUserRealm(new MyUserRealm());
-		jettyContext.getSecurityHandler().setAuthenticator(new BasicAuthenticator());
+		// Add basic authentication and only authorise the hello endpoint to "Cool" users
+		SecurityHandler securityHandler = jettyContext.getSecurityHandler();
+		securityHandler.setUserRealm(new MyUserRealm());
+		securityHandler.setAuthenticator(new BasicAuthenticator());
 		Constraint constraint = new Constraint("sayHiToCoolUsersOnly", "CoolUserRole");
 		constraint.setAuthenticate(true);
 		ConstraintMapping constraintMapping = new ConstraintMapping();
 		constraintMapping.setConstraint(constraint);
 		constraintMapping.setPathSpec("/hello");
 		ConstraintMapping[] constraintMappings = new ConstraintMapping[] {constraintMapping};
-		jettyContext.getSecurityHandler().setConstraintMappings(constraintMappings);
+		securityHandler.setConstraintMappings(constraintMappings);
 
 		server.start();
 		System.out.println("Server started at http://localhost:8080/api/v1");

@@ -1,42 +1,21 @@
 ### Valid request to /hello
 GET localhost:8080/api/v1/hello
-Authorization: nonsense, password
+# chris:password encoded base64
+Authorization: Basic Y2hyaXM6cGFzc3dvcmQ=
 X-Top-Secret-Header:Chrissy
-
-<> 2025-05-26T154250.200.txt
-<> 2025-05-26T154222.200.txt
-<> 2025-05-26T154107.200.txt
-<> 2025-05-26T154102.200.txt
-<> 2025-05-26T144350.200.txt
-<> 2025-05-26T144139.200.txt
-
-
-### Bad request due to missing header
-GET localhost:8080/api/v1/hello
-
-<> 2025-05-26T154248.400.txt
-<> 2025-05-26T154231.400.txt
-<> 2025-05-26T144352.400.txt
-<> 2025-05-26T144233.400.txt
-<> 2025-05-26T144200.400.txt
-
-### Request forbidden due to incorrect header value
-GET localhost:8080/api/v1/hello
-X-Top-Secret-Header:Chriss
-
-<> 2025-05-26T154246.403.txt
-<> 2025-05-26T154234.403.txt
-<> 2025-05-26T144355.403.txt
-<> 2025-05-26T144247.403.txt
-<> 2025-05-26T144235.400.txt
-<> 2025-05-26T144200.400.txt
 
 ### Request missing auth
 GET localhost:8080/api/v1/hello
 X-Top-Secret-Header:Chrissy
 
-<> 2025-05-26T154238.200.txt
-<> 2025-05-26T144458.200.txt
-<> 2025-05-26T144359.200.txt
-<> 2025-05-26T144141.200.txt
-<> 2025-05-26T143721.200.txt
+### Bad request due to missing header
+GET localhost:8080/api/v1/hello
+Authorization: Basic Y2hyaXM6cGFzc3dvcmQ=
+
+### Request forbidden due to incorrect header value
+GET localhost:8080/api/v1/hello
+Authorization: Basic Y2hyaXM6cGFzc3dvcmQ=
+X-Top-Secret-Header:Chriss
+
+
+
